@@ -260,6 +260,18 @@ public abstract class XtextTestBase {
         return errors;
     }
 
+    /**
+     * Test parsing input on a specific rule.
+     *
+     * @param textToParse
+     *            test to parse
+     * @param ruleName
+     *            name of rule to parse text with
+     * @param expectedErrorSubstrings
+     *            optional list of substrings expected to be found in errors. If
+     *            no expected errors are provided, the test passes as long as
+     *            some errors are encountered.
+     */
     protected void testParserRuleErrors(final String textToParse,
             final String ruleName, final String... expectedErrorSubstrings) {
         final List<SyntaxErrorMessage> errors = testParserRule(textToParse,
@@ -274,10 +286,9 @@ public abstract class XtextTestBase {
                 final boolean contains = err.getMessage().contains(substring);
                 if (contains) {
                     matchingSubstrings.add(substring);
+                    assertedErrors.add(err.getMessage());
                 }
             }
-
-            assertedErrors.add(err.getMessage());
         }
 
         final StringBuilder error = new StringBuilder();
@@ -292,7 +303,7 @@ public abstract class XtextTestBase {
             hadError = true;
         }
 
-        if (assertedErrors.size() != errors.size()) {
+        if (expectedErrorSubstrings.length > 0 && assertedErrors.size() != errors.size()) {
             error.append("Unasserted Errors:");
             for (final SyntaxErrorMessage err : errors) {
                 if (!assertedErrors.contains(err.getMessage())) {
@@ -350,10 +361,13 @@ public abstract class XtextTestBase {
     protected void testNotTerminal(final String input,
             final String unexpectedTerminal) {
         final List<Token> tokens = getTokens(input);
+
         final Token token = tokens.get(0);
 
+        String tokenType = getTokenType(token);
+
         assertFalse(input,
-                getTokenType(token).equals("RULE_" + unexpectedTerminal));
+                tokens.size() == 1 && tokenType != null && tokenType.equals("RULE_" + unexpectedTerminal));
     }
 
     /**
