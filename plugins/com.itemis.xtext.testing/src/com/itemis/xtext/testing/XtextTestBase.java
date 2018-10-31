@@ -1,9 +1,11 @@
 package com.itemis.xtext.testing;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -44,9 +46,13 @@ import org.eclipse.xtext.util.Pair;
 import org.eclipse.xtext.util.Tuples;
 import org.eclipse.xtext.validation.CheckMode;
 import org.eclipse.xtext.validation.Issue;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
+
+
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
@@ -68,6 +74,7 @@ import com.google.inject.Inject;
  * @author Markus Voelter
  * @author Alexander Nittka
  * @author Vlad Dumitrescu
+ * @author Marius Weth
  *
  */
 public abstract class XtextTestBase {
@@ -133,6 +140,7 @@ public abstract class XtextTestBase {
     public void before() {
     }
 
+    @BeforeEach
     @Before
     public final void _before() {
         issues = null;
@@ -169,11 +177,12 @@ public abstract class XtextTestBase {
     }
 
     @After
+    @AfterEach
     public void _after() {
         if (issues != null) {
             dumpUnassertedIssues();
             if (issues.except(assertedIssues).getIssues().size() != 0) {
-                Assert.fail("\n\nfound unasserted issues "
+                Assertions.fail("\n\nfound unasserted issues "
                         + issues.except(assertedIssues).getSummary() + "\n\n");
             }
         }
@@ -344,7 +353,7 @@ public abstract class XtextTestBase {
     protected void testTerminal(final String input,
             final String... expectedTerminals) {
         final List<Token> tokens = getTokens(input);
-        assertEquals(input, expectedTerminals.length, tokens.size());
+        assertEquals(expectedTerminals.length, tokens.size(),input);
         for (int i = 0; i < tokens.size(); i++) {
             final Token token = tokens.get(i);
             String exp = expectedTerminals[i];
@@ -366,8 +375,8 @@ public abstract class XtextTestBase {
 
         String tokenType = getTokenType(token);
 
-        assertFalse(input,
-                tokens.size() == 1 && tokenType != null && tokenType.equals("RULE_" + unexpectedTerminal));
+        assertFalse(tokens.size() == 1 && tokenType != null && tokenType.equals("RULE_" + unexpectedTerminal),
+                input);
     }
 
     /**
@@ -386,9 +395,9 @@ public abstract class XtextTestBase {
      */
     protected void testNoKeyword(final String keyword) {
         final List<Token> tokens = getTokens(keyword);
-        assertEquals(keyword, 1, tokens.size());
+        assertEquals(1, tokens.size(),keyword);
         final String type = getTokenType(tokens.get(0));
-        assertFalse(keyword, type.charAt(0) == '\'');
+        assertFalse(type.charAt(0) == '\'',keyword);
     }
 
     protected String loadFileContents(final String rootPath,
@@ -499,8 +508,8 @@ public abstract class XtextTestBase {
             fail("\n\n" + failMessage + "\n");
         }
 
-        assertFalse("Resource has no content",
-                resource.getContents().isEmpty());
+        assertFalse(resource.getContents().isEmpty(),
+                "Resource has no content");
         final EObject o = resource.getContents().get(0);
         // assure that the root element is of the expected type
         if (clazz != null) {
@@ -598,16 +607,16 @@ public abstract class XtextTestBase {
         ensureIsAfterTestFile();
 
         assertedIssues.addAll(coll.getIssues());
-        Assert.assertTrue("failed " + msg + coll.getMessageString(),
-                coll.evaluate());
+        Assertions.assertTrue(coll.evaluate(),
+                "failed " + msg + coll.getMessageString());
     }
 
     protected void assertConstraints(final FluentIssueCollection coll) {
         ensureIsAfterTestFile();
 
         assertedIssues.addAll(coll.getIssues());
-        Assert.assertTrue("<no id> failed" + coll.getMessageString(),
-                coll.evaluate());
+        Assertions.assertTrue(coll.evaluate(),
+                "<no id> failed" + coll.getMessageString());
     }
 
     protected void assertConstraints(final String constraintID,
@@ -615,8 +624,8 @@ public abstract class XtextTestBase {
         ensureIsAfterTestFile();
 
         assertedIssues.addAll(coll.getIssues());
-        Assert.assertTrue(constraintID + " failed" + coll.getMessageString(),
-                coll.evaluate());
+        Assertions.assertTrue(coll.evaluate(),
+                constraintID + " failed" + coll.getMessageString());
     }
 
     public EObject getEObject(final URI uri) {
