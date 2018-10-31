@@ -1,6 +1,7 @@
 package com.itemis.xtext.testing;
 
 import org.eclipse.emf.mwe.utils.StandaloneSetup;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.BeforeClass;
 
 /**
@@ -20,6 +21,7 @@ import org.junit.BeforeClass;
  * @author Markus Voelter
  * @author Alexander Nittka
  * @author Vlad Dumitrescu
+ * @author Marius Weth
  *
  */
 public abstract class XtextTest extends XtextTestBase {
@@ -32,6 +34,7 @@ public abstract class XtextTest extends XtextTestBase {
         super(uri);
     }
 
+    @BeforeAll
     @BeforeClass
     public static void init_internal() {
         new StandaloneSetup().setPlatformUri("..");
