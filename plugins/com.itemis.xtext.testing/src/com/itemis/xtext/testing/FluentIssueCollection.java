@@ -414,7 +414,7 @@ public class FluentIssueCollection implements Iterable<Issue> {
     public static String getIssueSummary(final Resource resource,
             final Issue issue) {
         boolean validFragment = true;
-        if ("//".equals(issue.getUriToProblem().fragment())) {
+        if (issue.getUriToProblem() == null || "//".equals(issue.getUriToProblem().fragment())) {
             validFragment = false;
         }
 
